@@ -4,13 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Klaim Freebet</title>
-</head>
-<body>
-    <h2>🎁 Klaim Freebet Anda!</h2>
-    <button onclick="klaimFreebet()">Klaim Sekarang</button>
-    <p id="status"></p>
-
     <script>
+        async function getFingerprint() {
+            let userAgent = navigator.userAgent;
+            let platform = navigator.platform;
+            let screenRes = screen.width + "x" + screen.height;
+            let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+            return btoa(userAgent + platform + screenRes + timezone);  // Encode jadi fingerprint unik
+        }
+
         async function klaimFreebet() {
             let params = new URLSearchParams(window.location.search);
             let user_id = params.get("user_id");
@@ -20,13 +23,15 @@
                 return;
             }
 
+            let fingerprint = await getFingerprint();
+
             try {
                 let response = await fetch("https://15883ade-e013-4580-9e9e-c01b76a09dda-00-2hzsudvx1isue.sisko.replit.dev/verify", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({ user_id: user_id }),
+                    body: JSON.stringify({ user_id: user_id, fingerprint: fingerprint }),
                     mode: "cors"
                 });
 
@@ -38,5 +43,10 @@
             }
         }
     </script>
+</head>
+<body>
+    <h2>🎁 Klaim Freebet Anda!</h2>
+    <button onclick="klaimFreebet()">Klaim Sekarang</button>
+    <p id="status"></p>
 </body>
 </html>
